@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumen — Sprint Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4efe6;
+    --paper-deep: #ebe4d6;
+    --paper-line: #d9d0bc;
+    --ink: #1a1612;
+    --ink-soft: #4a3f33;
+    --ink-faded: #8a7d6c;
+    --ink-ghost: #b8ad98;
+    --accent: #c85a28;
+    --accent-soft: #e8a989;
+    --accent-wash: rgba(200, 90, 40, 0.08);
+    --calm: #3b82c4;
+    --attention: #d4921e;
+    --break-color: #c85a28;
+    --breathing: #5a9b6f;
+
+    --display: 'Fraunces', Georgia, serif;
+    --sans: 'Instrument Sans', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.015) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(0,0,0,0.015) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: multiply;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 72px 48px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ───── MASTHEAD ───── */
+  .masthead {
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--ink-soft);
+    padding: 14px 0 16px;
+    margin-bottom: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .masthead-left { display: flex; gap: 28px; }
+  .masthead-right { display: flex; gap: 28px; }
+
+  .edition {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ───── HERO ───── */
+  .hero {
+    margin-bottom: 96px;
+    position: relative;
+  }
+
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "wght" 400, "SOFT" 30;
+    font-size: clamp(72px, 13vw, 168px);
+    line-height: 0.85;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "wght" 350, "SOFT" 50;
+    color: var(--accent);
+  }
+
+  .hero-subtitle {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 24, "wght" 400;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.3;
+    color: var(--ink-soft);
+    max-width: 520px;
+    margin-bottom: 48px;
+  }
+
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .meta-block .meta-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 8px;
+  }
+
+  .meta-block .meta-value {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 72, "wght" 400;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .meta-block .meta-value.mono {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .meta-block .meta-sub {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-faded);
+    margin-top: 4px;
+  }
+
+  /* Progress wave */
+  .progress-rail {
+    height: 2px;
+    background: var(--paper-line);
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--accent);
+    transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* ───── SPRINT CHAPTERS ───── */
+  .sprints {
+    margin-top: 32px;
+  }
+
+  .sprint {
+    margin-bottom: 80px;
+    position: relative;
+  }
+
+  .sprint-header {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 32px;
+    align-items: baseline;
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--ink);
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s;
+  }
+
+  .sprint-header:hover { opacity: 0.7; }
+
+  .sprint-numeral {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "wght" 300, "SOFT" 80;
+    font-size: 84px;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  .sprint-label-group {
+    padding-top: 8px;
+  }
+
+  .sprint-eyebrow {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 8px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .sprint-active-marker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .sprint-active-marker::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  .sprint-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 48, "wght" 400;
+    font-size: 30px;
+    line-height: 1.15;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+  }
+
+  .sprint-tally {
+    text-align: right;
+    padding-top: 8px;
+  }
+
+  .sprint-tally-num {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 72, "wght" 400;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .sprint-tally-num em {
+    font-style: italic;
+    font-variation-settings: "opsz" 72, "wght" 350;
+    color: var(--ink-faded);
+  }
+
+  .sprint-tally-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-top: 6px;
+  }
+
+  .sprint-body {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.5s ease, opacity 0.4s ease;
+  }
+
+  .sprint.collapsed .sprint-body {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sprint-body > * { overflow: hidden; }
+
+  /* ───── TIER SECTIONS ───── */
+  .tier-section { margin-bottom: 40px; }
+
+  .tier-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .tier-heading .tier-mark {
+    font-family: var(--display);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .tier-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--paper-line);
+  }
+
+  /* ───── TASKS ───── */
+  .task {
+    display: grid;
+    grid-template-columns: 64px 22px 1fr auto;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--paper-line);
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.3s;
+    align-items: start;
+  }
+
+  .task:hover {
+    background: var(--accent-wash);
+    margin: 0 -16px;
+    padding: 18px 16px;
+  }
+
+  .task-id {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-faded);
+    letter-spacing: 0.05em;
+    padding-top: 4px;
+    font-weight: 500;
+  }
+
+  .task-check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 50%;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    flex-shrink: 0;
+  }
+
+  .task.done .task-check {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .task.done .task-check::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 3.5px;
+    width: 9px;
+    height: 4px;
+    border-left: 1.5px solid var(--paper);
+    border-bottom: 1.5px solid var(--paper);
+    transform: rotate(-45deg);
+  }
+
+  .task-content {
+    min-width: 0;
+  }
+
+  .task-title {
+    font-family: var(--sans);
+    font-size: 15.5px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 4px;
+    letter-spacing: -0.005em;
+    transition: color 0.25s;
+  }
+
+  .task.done .task-title {
+    color: var(--ink-faded);
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-ghost);
+    text-decoration-thickness: 1px;
+  }
+
+  .task-desc {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    max-width: 620px;
+  }
+
+  .task.done .task-desc {
+    color: var(--ink-faded);
+  }
+
+  .task-tier {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    padding-top: 6px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .task-tier.must { color: var(--accent); }
+
+  /* ───── GATE ───── */
+  .gate {
+    margin-top: 40px;
+    padding: 28px 32px;
+    background: var(--paper-deep);
+    border-left: 2px solid var(--ink);
+    position: relative;
+  }
+
+  .gate::before {
+    content: '¶';
+    position: absolute;
+    top: 20px;
+    left: -18px;
+    background: var(--paper);
+    padding: 0 4px;
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 20px;
+  }
+
+  .gate-label {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 24, "wght" 400;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .gate-sublabel {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 20px;
+  }
+
+  .gate-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 7px 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ink-soft);
+    transition: color 0.2s;
+    border-bottom: 1px dotted transparent;
+  }
+
+  .gate-item:hover {
+    color: var(--ink);
+  }
+
+  .gate-item .gate-dot {
+    width: 11px;
+    height: 11px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 2px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .gate-item.done .gate-dot {
+    background: var(--ink);
+    border-color: var(--ink);
+    position: relative;
+  }
+
+  .gate-item.done .gate-dot::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--paper-deep);
+    font-size: 8px;
+    font-weight: bold;
+  }
+
+  .gate-item.done {
+    color: var(--ink-faded);
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-ghost);
+  }
+
+  /* ───── COLOPHON ───── */
+  .colophon {
+    margin-top: 120px;
+    padding-top: 32px;
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 48px;
+    align-items: baseline;
+  }
+
+  .colophon-text {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 24, "wght" 400;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    max-width: 480px;
+  }
+
+  .colophon-dome {
+    width: 40px;
+    height: 26px;
+    border-radius: 40px 40px 0 0;
+    background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+    cursor: pointer;
+    position: relative;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+
+  .colophon-dome::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 50% 90%, rgba(255,255,255,0.3), transparent 60%);
+  }
+
+  .colophon-dome:hover { opacity: 1; }
+
+  .reset-btn {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--ink-soft);
+    color: var(--ink-soft);
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* ───── EMPTY STATES ───── */
+  .tier-section.empty { display: none; }
+
+  /* ───── RESPONSIVE ───── */
+  @media (max-width: 768px) {
+    .container { padding: 40px 24px 80px; }
+    .masthead { flex-direction: column; gap: 8px; }
+    .hero-meta { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .sprint-header { grid-template-columns: 80px 1fr; gap: 20px; }
+    .sprint-numeral { font-size: 64px; }
+    .sprint-tally { grid-column: 2; text-align: left; padding-top: 0; margin-top: 8px; }
+    .task { grid-template-columns: 48px 18px 1fr; gap: 14px; }
+    .task-tier { grid-column: 2 / 4; text-align: left; padding-top: 0; margin-top: 4px; }
+    .colophon { grid-template-columns: 1fr; gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-left">
+      <span class="edition">Vol. 01 · Edition VII</span>
+      <span>KTH Royal Institute of Technology</span>
+    </div>
+    <div class="masthead-right">
+      <span>NordiCHI 2026 · Vaasa</span>
+      <span id="todayStamp">—</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">A Sprint Journal</div>
+    <h1 class="hero-title">Lumen<em>,</em></h1>
+    <p class="hero-subtitle">
+      A tangible object for negotiated screen-work interruption, built in four sprints across twenty-six days.
+    </p>
+
+    <div class="hero-meta">
+      <div class="meta-block">
+        <div class="meta-label">Completed</div>
+        <div class="meta-value"><span id="doneCount">0</span><em style="font-family:var(--display);font-style:italic;color:var(--ink-faded);font-variation-settings:'opsz' 72,'wght' 350;"> / </em><span id="totalCount">0</span></div>
+        <div class="progress-rail"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-label">Days Until Submit</div>
+        <div class="meta-value" id="daysLeft">—</div>
+        <div class="meta-sub">May 16 · AoE</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-label">Current Sprint</div>
+        <div class="meta-value mono" id="currentSprintLabel">—</div>
+        <div class="meta-sub" id="currentSprintDates">—</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-label">Must Tasks Remain</div>
+        <div class="meta-value"><span id="mustRemain">—</span></div>
+        <div class="meta-sub" id="mustTotal">of — total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPRINT CHAPTERS -->
+  <div class="sprints" id="sprintContainer"></div>
+
+  <!-- COLOPHON -->
+  <div class="colophon">
+    <p class="colophon-text">
+      Progress is kept locally in this browser. Nothing leaves your machine. A working instrument, not a finished document.
+    </p>
+    <div class="colophon-dome" id="colophonDome" title="Breathe"></div>
+    <button class="reset-btn" onclick="resetProgress()">Reset Journal</button>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'lumen_journal_v1';
+const romanNumerals = ['I', 'II', 'III', 'IV'];
+
+const data = {
+  sprints: [
+    {
+      id: 's1',
+      numeral: 'I',
+      title: 'Sensing & Early Outreach',
+      dateRange: 'Apr 20 – Apr 26',
+      startDate: new Date('2026-04-20'),
+      endDate: new Date('2026-04-26'),
+      tasks: [
+        { id: 'T1.1', title: 'EAR calculation with live display', desc: 'MediaPipe face mesh, 6-point EAR formula per eye, averaged across both eyes. Printed live to the webcam feed.', tier: 'must', done: true },
+        { id: 'T1.6', title: 'Blink counter with bilateral threshold', desc: 'Three iterations. Bilateral check (both eyes below threshold simultaneously), consecutive-frame filter (CONSEC_FRAMES = 2), minimum open duration (CONSEC_OPEN = 3) to filter squint oscillations. Tested at 10/10 on deliberate blinks.', tier: 'must', done: true },
+        { id: 'T1.7', title: 'Live blinks-per-minute display', desc: 'Rolling 60-second counter using collections.deque with timestamp appending. Displayed via cv2.putText alongside EAR.', tier: 'must', done: false },
+        { id: 'T1.2', title: 'Jan Gulliksen email sent', desc: 'Acknowledgment request to the accessibility and human-centered technology professor at KTH. Response expected by Thursday.', tier: 'must', done: false },
+        { id: 'T1.3', title: 'Autoethnography log started', desc: 'Daily 5-minute entries at notes/autoethnography.csv. Material for Abstract Paragraph 4.', tier: 'must', done: false },
+        { id: 'T1.8', title: 'Robustness testing', desc: 'Detection under glasses on/off, dim lighting, head angles beyond ±30°. Document findings in README under Known Limitations.', tier: 'must', done: false },
+        { id: 'T1.9', title: 'Desk footprint measured', desc: 'Validate 10cm dome + 12cm base dimensions against actual workspace before 3D print submission.', tier: 'must', done: false },
+        { id: 'T1.10', title: 'Course deadline mapping', desc: 'Save as deadlines.md. DM1590, DM2624, DH2670 deadlines mapped against sprint schedule.', tier: 'must', done: false },
+        { id: 'T1.11', title: 'Hardware ordered', desc: 'XIAO ESP32-S3 (Seeed Studio), NeoPixel ring 16 LEDs (WS2812B), push-button panel-mount, USB-C cable 2m, jumper wires. From Electrokit.', tier: 'must', done: false },
+        { id: 'T1.12', title: 'ACM template set up', desc: 'Download from NordiCHI submission guidelines. Scaffold paper/abstract.tex with ACM single-column format.', tier: 'must', done: false },
+        { id: 'T1.13', title: 'EAR demo clip recorded', desc: '60 seconds, clean background, daylight, landmarks visible, EAR counter readable. For Yuting Chen email attachment.', tier: 'must', done: false },
+        { id: 'T1.14', title: 'Yuting Chen email sent', desc: 'Co-author outreach. Tangible interaction PhD candidate at KTH. Attach EAR clip and short pitch.', tier: 'must', done: false },
+        { id: 'T1.15', title: 'README initial update', desc: 'Problem statement, technical stack, current status, known limitations.', tier: 'should', done: false },
+        { id: 'T1.16', title: 'List 5–7 KTH classmates for critiques', desc: 'DM1590, DM2624, DH2670 cohorts. Names and rough availability.', tier: 'should', done: false },
+      ],
+      gate: [
+        { id: 'g1_1', text: 'Live blinks-per-minute display working?' },
+        { id: 'g1_2', text: 'Jan email sent and acknowledged?' },
+        { id: 'g1_3', text: 'Yuting email sent with EAR demo clip?' },
+        { id: 'g1_4', text: 'Autoethnography: 5 or more entries?' },
+        { id: 'g1_5', text: 'XIAO ESP32-S3 hardware ordered?' },
+        { id: 'g1_6', text: 'Desk footprint validated against workspace?' },
+      ]
+    },
+    {
+      id: 's2',
+      numeral: 'II',
+      title: 'Baseline, Risk Logic & Abstract Opening',
+      dateRange: 'Apr 27 – May 3',
+      startDate: new Date('2026-04-27'),
+      endDate: new Date('2026-05-03'),
+      tasks: [
+        { id: 'T2.1', title: 'Rolling baseline engine', desc: 'Dual-mode: 30-minute deque for real use and 30-second quick-cal for demos. Backs the personalized threshold system.', tier: 'must', done: false },
+        { id: 'T2.2', title: 'Risk score with break definition', desc: 'Four break-reset conditions implemented per spec §4.3. Weighted as 0.5 blink_risk + 0.5 focus_risk.', tier: 'must', done: false },
+        { id: 'T2.3', title: 'State machine definition', desc: 'Python enum covering CALM, ATTENTION, BREAK, BREATHING, PAUSED.', tier: 'must', done: false },
+        { id: 'T2.4', title: 'Mock state visualization', desc: 'Tkinter colored circle rendering the state machine. Validates logic before hardware arrives.', tier: 'must', done: false },
+        { id: 'T2.5', title: 'F1 validation', desc: '5-minute recording, manual blink count against system output, report exact F1 in README. If below 0.7 schedule a re-tune session in Sprint 3.', tier: 'must', done: false },
+        { id: 'T2.6', title: 'Draft Abstract §1 — Problem & RQ', desc: 'Position notification-based digital wellbeing tools within McFarlane 2002 "immediate" interruption category. Introduce Lumen as negotiated instance. 160 words.', tier: 'must', done: false },
+        { id: 'T2.7', title: 'CAD render of Lumen', desc: 'Fusion 360 render at 1500×1200 pixels. Photorealistic on a desk with laptop. Backup still image in case the physical print delays.', tier: 'must', done: false },
+        { id: 'T2.8', title: 'Draft Abstract §2 — Artifact', desc: 'Artifact description and negotiation mechanisms. Ground in Matthews et al. 2004 and Ho & Intille 2005. 200 words.', tier: 'must', done: false },
+      ],
+      gate: [
+        { id: 'g2_1', text: 'State machine transitions on risk?' },
+        { id: 'g2_2', text: 'Break logic fires on all four conditions?' },
+        { id: 'g2_3', text: 'F1 ≥ 0.7?' },
+        { id: 'g2_4', text: 'XIAO ESP32-S3 arrived?' },
+        { id: 'g2_5', text: 'Yuting response received?' },
+        { id: 'g2_6', text: 'CAD render presentable?' },
+        { id: 'g2_7', text: 'Abstract §1 and §2 drafted?' },
+      ]
+    },
+    {
+      id: 's3',
+      numeral: 'III',
+      title: 'Hardware & First Critiques',
+      dateRange: 'May 4 – May 10',
+      startDate: new Date('2026-05-04'),
+      endDate: new Date('2026-05-10'),
+      tasks: [
+        { id: 'T3.1', title: 'ESP32-S3 firmware', desc: 'Non-blocking sketch. GPIO 4 button (INPUT_PULLUP), GPIO 5 NeoPixel data. 115200 baud. All five states plus bidirectional serial events (P, R, X, E).', tier: 'must', done: false },
+        { id: 'T3.2', title: 'Dome CAD and print submission', desc: 'Fusion 360 dome and base. 2–3mm translucent walls. Electronics compartment sized for the XIAO. Submit STL to KTH Middla.', tier: 'must', done: false },
+        { id: 'T3.3', title: 'Python bidirectional serial interface', desc: 'Full Lumen class with listener thread. on_pause stops webcam. on_resume restarts. Autoethnography hooks on breathing events.', tier: 'must', done: false },
+        { id: 'T3.4', title: 'Setup description document', desc: 'Equipment list, annotated photo or render, one paragraph per item, total footprint dimensions. Save as submission/setup_description.pdf by May 7.', tier: 'must', done: false },
+        { id: 'T3.5', title: 'End-to-end integration test', desc: 'Webcam to risk score to ESP32 to LED. All five states respond. Tap and hold trigger correct Python callbacks.', tier: 'must', done: false },
+        { id: 'T3.6', title: 'Design critique session I', desc: '5min demo, 15min use, 10min debrief. Notes in notes/critique_01.md.', tier: 'must', done: false },
+        { id: 'T3.7', title: 'Draft Abstract §3 — Design stance', desc: 'Critical design framing. Reference McFarlane taxonomy explicitly. 140 words.', tier: 'must', done: false },
+        { id: 'T3.8', title: 'Design critique session II', desc: 'Second peer session if schedulable. Alternative: weekly reflection and 15+ autoethnography entries.', tier: 'should', done: false },
+      ],
+      gate: [
+        { id: 'g3_1', text: 'Firmware flashing to XIAO ESP32-S3?' },
+        { id: 'g3_2', text: 'Python serial round-tripping events?' },
+        { id: 'g3_3', text: 'Dome print submitted?' },
+        { id: 'g3_4', text: 'Setup description complete?' },
+        { id: 'g3_5', text: 'Critique I done?' },
+        { id: 'g3_6', text: 'Abstract §1 through §3 drafted?' },
+      ]
+    },
+    {
+      id: 's4',
+      numeral: 'IV',
+      title: 'Assembly, Video & Submission',
+      dateRange: 'May 11 – May 16',
+      startDate: new Date('2026-05-11'),
+      endDate: new Date('2026-05-16'),
+      tasks: [
+        { id: 'T4.1', title: 'Full Lumen assembly', desc: 'Dome, base, NeoPixel ring, button, XIAO microcontroller. Test all five states plus tap and hold. Photograph three angles.', tier: 'must', done: false },
+        { id: 'T4.3', title: 'Conference lighting test', desc: 'Test MediaPipe under bright fluorescent, dim warm ambient, and mixed backlit conditions. Document EAR threshold ranges for each.', tier: 'must', done: false },
+        { id: 'T4.4', title: 'Draft Abstract §4 — Method & Findings', desc: 'Frame observations as negotiation patterns in self-directed use. Pull from autoethnography and critique sessions. 160 words.', tier: 'must', done: false },
+        { id: 'T4.5', title: 'Video recording day', desc: '90-second clip. Calm to amber to red to tap (dim white) to hold (green breathing) to calm. Tripod, warm desk lamp, clean background. Three takes.', tier: 'must', done: false },
+        { id: 'T4.6', title: 'Video edit', desc: 'iMovie. Title card. Export MP4 at 1080p.', tier: 'must', done: false },
+        { id: 'T4.8', title: 'Draft Abstract §5 and figure caption', desc: 'Demo attendee flow and annotated setup photo.', tier: 'must', done: false },
+        { id: 'T4.9', title: 'Abstract editing pass', desc: 'Integrate §1 through §5. Tighten to two pages. Verify ACM formatting. All four new references included (McFarlane, Ho & Intille, Matthews et al., Hausen et al.).', tier: 'must', done: false },
+        { id: 'T4.10', title: 'Peer read', desc: 'One KTH classmate reads the draft with the prompt: "does this sound like bullshit?"', tier: 'must', done: false },
+        { id: 'T4.11', title: 'Final materials check', desc: 'Abstract PDF, still image, setup description, 2-minute video. All four ready and named correctly.', tier: 'must', done: false },
+        { id: 'T4.12', title: 'Submit to PCS', desc: 'Upload all four. Verify confirmations. Done by end of May 16.', tier: 'must', done: false },
+        { id: 'T4.13', title: 'README polish', desc: 'Submission status, reported F1, video link, and limitations section finalized.', tier: 'must', done: false },
+        { id: 'T4.2', title: 'Design critique session III', desc: 'Third peer session.', tier: 'should', done: false },
+        { id: 'T4.7', title: 'Design critique sessions IV & V', desc: 'Additional sessions if schedulable. Deepens findings material.', tier: 'stretch', done: false },
+      ],
+      gate: [
+        { id: 'g4_1', text: 'Lumen physically assembled and working?' },
+        { id: 'g4_2', text: 'Video recorded and edited to 90 seconds?' },
+        { id: 'g4_3', text: 'Lighting test completed?' },
+        { id: 'g4_4', text: 'Abstract §1 through §5 integrated into 2-page PDF?' },
+        { id: 'g4_5', text: 'Three or more critique sessions completed?' },
+        { id: 'g4_6', text: 'Submitted?' },
+      ]
+    }
+  ]
+};
+
+const tierOrder = ['must', 'should', 'stretch'];
+const tierLabels = { must: 'Must Have', should: 'Should Have', stretch: 'Stretch' };
+const tierMarks = { must: '✦', should: '◆', stretch: '○' };
+
+let state = {};
+const today = new Date('2026-04-22');
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) state = JSON.parse(saved);
+  } catch(e) { state = {}; }
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function isDone(id, fallback = false) {
+  if (state[id] !== undefined) return state[id];
+  return fallback;
+}
+
+function getTaskDefault(id) {
+  for (const sprint of data.sprints) {
+    for (const task of sprint.tasks) {
+      if (task.id === id) return task.done;
+    }
+  }
+  return false;
+}
+
+function toggleTask(id) {
+  const current = isDone(id, getTaskDefault(id));
+  state[id] = !current;
+  saveState();
+  render();
+}
+
+function toggleGate(id) {
+  state[id] = !isDone(id);
+  saveState();
+  render();
+}
+
+function toggleSprint(id) {
+  state['collapsed_' + id] = !state['collapsed_' + id];
+  saveState();
+  render();
+}
+
+function resetProgress() {
+  if (confirm('Reset the entire journal? This will clear all progress.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    state = {};
+    render();
+  }
+}
+
+function countTasks() {
+  let total = 0, done = 0, mustTotal = 0, mustDone = 0;
+  for (const sprint of data.sprints) {
+    for (const task of sprint.tasks) {
+      total++;
+      const isTaskDone = isDone(task.id, task.done);
+      if (isTaskDone) done++;
+      if (task.tier === 'must') {
+        mustTotal++;
+        if (isTaskDone) mustDone++;
+      }
+    }
+  }
+  return { total, done, mustTotal, mustDone };
+}
+
+function sprintTally(sprint) {
+  let total = sprint.tasks.length, done = 0;
+  for (const task of sprint.tasks) {
+    if (isDone(task.id, task.done)) done++;
+  }
+  return { total, done };
+}
+
+function findCurrentSprint() {
+  for (const sprint of data.sprints) {
+    if (today >= sprint.startDate && today <= sprint.endDate) return sprint;
+  }
+  // If before first sprint
+  if (today < data.sprints[0].startDate) return data.sprints[0];
+  // If after last sprint
+  return data.sprints[data.sprints.length - 1];
+}
+
+function daysBetween(a, b) {
+  return Math.ceil((b - a) / (1000 * 60 * 60 * 24));
+}
+
+function formatDateStamp(d) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function render() {
+  const { total, done, mustTotal, mustDone } = countTasks();
+  const currentSprint = findCurrentSprint();
+  const submitDate = new Date('2026-05-16');
+  const daysRemaining = daysBetween(today, submitDate);
+
+  // Meta
+  document.getElementById('doneCount').textContent = String(done).padStart(2, '0');
+  document.getElementById('totalCount').textContent = String(total).padStart(2, '0');
+  document.getElementById('progressFill').style.width = (total ? (done/total*100) : 0) + '%';
+  document.getElementById('daysLeft').textContent = daysRemaining;
+  document.getElementById('currentSprintLabel').textContent = 'Sprint ' + currentSprint.numeral;
+  document.getElementById('currentSprintDates').textContent = currentSprint.dateRange;
+  document.getElementById('mustRemain').textContent = (mustTotal - mustDone);
+  document.getElementById('mustTotal').textContent = 'of ' + mustTotal + ' total';
+  document.getElementById('todayStamp').textContent = formatDateStamp(today);
+
+  // Sprints
+  const container = document.getElementById('sprintContainer');
+  container.innerHTML = '';
+
+  data.sprints.forEach((sprint, idx) => {
+    const tally = sprintTally(sprint);
+    const defaultCollapsed = sprint.id !== currentSprint.id;
+    const isCollapsed = state['collapsed_' + sprint.id] !== undefined
+      ? state['collapsed_' + sprint.id]
+      : defaultCollapsed;
+    const isCurrent = sprint.id === currentSprint.id;
+
+    const sprintEl = document.createElement('section');
+    sprintEl.className = 'sprint' + (isCollapsed ? ' collapsed' : '');
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'sprint-header';
+    header.onclick = () => toggleSprint(sprint.id);
+
+    header.innerHTML = `
+      <div class="sprint-numeral">${sprint.numeral}</div>
+      <div class="sprint-label-group">
+        <div class="sprint-eyebrow">
+          <span>${sprint.dateRange}</span>
+          ${isCurrent ? '<span class="sprint-active-marker">Active</span>' : ''}
+        </div>
+        <h2 class="sprint-title">${sprint.title}</h2>
+      </div>
+      <div class="sprint-tally">
+        <div class="sprint-tally-num">${String(tally.done).padStart(2,'0')}<em>/${String(tally.total).padStart(2,'0')}</em></div>
+        <div class="sprint-tally-label">Complete</div>
+      </div>
+    `;
+
+    sprintEl.appendChild(header);
+
+    // Body
+    const body = document.createElement('div');
+    body.className = 'sprint-body';
+    const bodyInner = document.createElement('div');
+
+    // Group by tier
+    tierOrder.forEach(tier => {
+      const tierTasks = sprint.tasks.filter(t => t.tier === tier);
+      if (tierTasks.length === 0) return;
+
+      const tierSection = document.createElement('div');
+      tierSection.className = 'tier-section';
+
+      const heading = document.createElement('div');
+      heading.className = 'tier-heading';
+      heading.innerHTML = `<span class="tier-mark">${tierMarks[tier]}</span> ${tierLabels[tier]}`;
+      tierSection.appendChild(heading);
+
+      tierTasks.forEach(task => {
+        const done = isDone(task.id, task.done);
+        const taskEl = document.createElement('div');
+        taskEl.className = 'task' + (done ? ' done' : '');
+        taskEl.onclick = () => toggleTask(task.id);
+        taskEl.innerHTML = `
+          <div class="task-id">${task.id}</div>
+          <div class="task-check"></div>
+          <div class="task-content">
+            <div class="task-title">${task.title}</div>
+            <div class="task-desc">${task.desc}</div>
+          </div>
+          <div class="task-tier ${task.tier}">${tier === 'must' ? 'Essential' : tier === 'should' ? 'Important' : 'Optional'}</div>
+        `;
+        tierSection.appendChild(taskEl);
+      });
+
+      bodyInner.appendChild(tierSection);
+    });
+
+    // Gate
+    if (sprint.gate && sprint.gate.length) {
+      const gate = document.createElement('div');
+      gate.className = 'gate';
+      gate.innerHTML = `
+        <div class="gate-label">Sprint Gate</div>
+        <div class="gate-sublabel">Evaluation Checkpoints</div>
+      `;
+      sprint.gate.forEach(item => {
+        const done = isDone(item.id);
+        const el = document.createElement('div');
+        el.className = 'gate-item' + (done ? ' done' : '');
+        el.onclick = (e) => { e.stopPropagation(); toggleGate(item.id); };
+        el.innerHTML = `<div class="gate-dot"></div><span>${item.text}</span>`;
+        gate.appendChild(el);
+      });
+      bodyInner.appendChild(gate);
+    }
+
+    body.appendChild(bodyInner);
+    sprintEl.appendChild(body);
+    container.appendChild(sprintEl);
+  });
+}
+
+// Dome click — cycles amber intensity
+document.getElementById('colophonDome').addEventListener('click', function() {
+  this.style.transition = 'opacity 3s ease-in-out';
+  this.style.opacity = '0.3';
+  setTimeout(() => {
+    this.style.opacity = '1';
+    setTimeout(() => { this.style.opacity = '0.8'; }, 1500);
+  }, 1500);
+});
+
+// Init
+loadState();
+render();
+</script>
+</body>
+</html>

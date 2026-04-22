@@ -1,14 +1,21 @@
 import cv2
+import time
+from collections import deque
 import mediapipe as mp
 from blink_detector import calculate_ear, LEFT_EYE, RIGHT_EYE
 
+# Blink detection tuning
 EAR_THRESHOLD = 0.21
 CONSEC_FRAMES = 2
-CONSEC_OPEN = 3        # frames above threshold required to confirm eye is open again
-consec_above = 0       # consecutive frames EAR has been above threshold
+CONSEC_OPEN = 3
+
+# State
 consec_below = 0
+consec_above = 0
 is_closed = False
 blink_count = 0
+blink_times = deque()           # timestamps of completed blinks
+WINDOW_SECONDS = 60             # rolling window size
 
 mp_face_mesh = mp.solutions.face_mesh
 
@@ -23,14 +30,23 @@ capture = cv2.VideoCapture(0)
 
 while capture.isOpened():
     ok, frame = capture.read()
-
     if not ok:
         break
+
+    now = time.time()
+
+    # Prune expired blinks (older than 60s) from the left of the deque
+    while blink_times and now - blink_times[0] > WINDOW_SECONDS:
+        blink_times.popleft()
+
+    blinks_per_min = len(blink_times)
 
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = face_mesh.process(rgb)
 
     if not results.multi_face_landmarks:
+        cv2.putText(frame, "NO FACE", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
         cv2.imshow("Eye Landmarks", frame)
         if cv2.waitKey(1) & 0xFF == ord('w'):
             break
@@ -53,7 +69,7 @@ while capture.isOpened():
     both_closed = (left_ear < EAR_THRESHOLD) and (right_ear < EAR_THRESHOLD)
 
     if both_closed:
-        consec_above = 0        # reset open counter whenever eye dips below
+        consec_above = 0
         consec_below += 1
         if consec_below >= CONSEC_FRAMES:
             is_closed = True
@@ -62,14 +78,17 @@ while capture.isOpened():
         if consec_above >= CONSEC_OPEN:
             if is_closed:
                 blink_count += 1
+                blink_times.append(now)   # record timestamp on completed blink
             is_closed = False
             consec_below = 0
 
+    # Display
     cv2.putText(frame, f"EAR: {avg_ear:.3f}", (10, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-
     cv2.putText(frame, f"Blinks: {blink_count}", (10, 65),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+    cv2.putText(frame, f"Rate: {blinks_per_min}/min", (10, 100),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 200, 255), 2)
 
     cv2.imshow("Eye Landmarks", frame)
 
