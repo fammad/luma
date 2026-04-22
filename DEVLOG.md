@@ -21,7 +21,7 @@ Built `test_facemesh.py` first to confirm MediaPipe face mesh was actually runni
 
 Hardware is still pending. Everything so far is software only.
 
-## April 22 — Blink counter
+## April 21 — Blink counter
 
 Added blink event detection on top of the EAR values. Took three iterations.
 
@@ -34,3 +34,13 @@ Third version added a minimum open duration — 3 consecutive above-threshold fr
 Result: 10 deliberate blinks, count showed 10. Open-eye EAR baseline is 0.33 in evening home lighting. Threshold is set at 0.21. That gap will likely need re-tuning under conference fluorescents in Vaasa.
 
 ESP32-S3 not yet ordered. No hardware built.
+
+## April 22 - Blink Rate per 60 second.
+
+Added blink counting functionality to the code that can be used to count how many blink occured in 60 seconds.
+
+First created new constants(how many second has to count) and variables (dequeu four double ended queue). The code append every time it sees new blink. If the blink is out of given WINDOW_SECOND it drops thhe frist blink_times[0] one and add this one if this code true while blink_times and now - blink_times[0] > WINDOW_SECONDS
+
+Result: 2 minute user test to count manual eye blink with the system. It was accurate. But I realized my blink rate is around 5-9 per minute which is not typical.
+
+
