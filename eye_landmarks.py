@@ -13,7 +13,7 @@ CONSEC_OPEN = 3
 consec_below = 0
 consec_above = 0
 is_closed = False
-blink_count = 0
+blink_count = 0                 # timestamps of completed blinks
 blink_times = deque()           # timestamps of completed blinks
 WINDOW_SECONDS = 60             # rolling window size
 
@@ -33,6 +33,13 @@ while capture.isOpened():
     if not ok:
         break
 
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('q'):
+        break
+    if key == ord('r'):
+        blink_count = 0
+        blink_times.clear()
+
     now = time.time()
 
     # Prune expired blinks (older than 60s) from the left of the deque
@@ -48,8 +55,6 @@ while capture.isOpened():
         cv2.putText(frame, "NO FACE", (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
         cv2.imshow("Eye Landmarks", frame)
-        if cv2.waitKey(1) & 0xFF == ord('w'):
-            break
         continue
 
     landmarks = results.multi_face_landmarks[0].landmark
@@ -91,9 +96,5 @@ while capture.isOpened():
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 200, 255), 2)
 
     cv2.imshow("Eye Landmarks", frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('w'):
-        break
-
 capture.release()
 cv2.destroyAllWindows()
