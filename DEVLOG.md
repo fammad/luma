@@ -43,4 +43,22 @@ First created new constants(how many second has to count) and variables (dequeu 
 
 Result: 2 minute user test to count manual eye blink with the system. It was accurate. But I realized my blink rate is around 5-9 per minute which is not typical.
 
+## April 23 — Range and lighting test
 
+Tested blink detection accuracy across distance and lighting conditions.
+
+MacBook Pro built-in camera, 1920×1080 at 60 FPS.
+
+Low light: ~99% accurate up to 120 cm. Beyond that, landmark confidence 
+drops and EAR values become unstable.
+
+Normal / daylight: ~99% accurate up to 150 cm. Same degradation pattern 
+past that threshold — not a gradual drop, more like a cliff.
+
+This matters for the NordiCHI demo: attendees will be sitting ~60–80 cm 
+from the screen. Both lighting conditions cover that range comfortably. 
+The threshold cliff past 150 cm is not a concern for the demo setup, but 
+I'll note the range limit in the abstract's limitations paragraph.
+
+EAR threshold is still 0.21. Haven't re-tuned for conference fluorescents 
+yet — that's the Sprint 4 lighting test.
