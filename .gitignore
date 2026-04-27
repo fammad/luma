@@ -1,6 +1,17 @@
-venv/
+# Virtual environment
+lumen-env/
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+
+# macOS
 .DS_Store
+
+# IDE
+.vscode/
+
+# Local docs not for public repo
 ROADMAP_v2.md
 deadlines.md

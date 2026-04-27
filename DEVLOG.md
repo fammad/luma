@@ -15,7 +15,7 @@ Started investigating the detection logic. Imported variables, mapped out what t
 
 ## April 15 — Environment, repo, first working detection
 
-Set up the conda environment, created the GitHub repo, added dependencies. Python 3.12 pinned, mediapipe fixed at 0.10.14 because 3.13 breaks the `mp.solutions` API.
+Set up the venv environment, created the GitHub repo, added dependencies. Python 3.12 pinned, mediapipe fixed at 0.10.14 because 3.13 breaks the `mp.solutions` API.
 
 Built `test_facemesh.py` first to confirm MediaPipe face mesh was actually running before touching eye-specific logic. Once that worked, moved to `eye_landmarks.py` — isolated the 6 landmark indices per eye and drew them on the webcam feed. Then wrote `blink_detector.py` with the EAR calculation. By end of day, EAR was printing live to screen.
 

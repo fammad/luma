@@ -4,10 +4,11 @@ from collections import deque
 import mediapipe as mp
 from blink_detector import calculate_ear, LEFT_EYE, RIGHT_EYE
 
-# Blink detection constants
+# Contants
 EAR_THRESHOLD = 0.21
 CONSEC_FRAMES = 2
 CONSEC_OPEN = 3
+
 
 # State
 consec_below = 0
