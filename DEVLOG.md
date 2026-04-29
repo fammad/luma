@@ -64,7 +64,7 @@ EAR threshold is still 0.21. Haven't re-tuned for conference fluorescents
 yet — that's the Sprint 4 lighting test.
 
 
-## April 29 — Rolling baseline engine
+## April 28 — Rolling baseline engine
 
 Built `BaselineEngine` class - owns "what's the healthy blink rate reference for this user right now?" Returns reference, personal_baseline, floor_active, current_rate, samples_collected via get_state().
 
@@ -79,4 +79,50 @@ Smoke test (3 scenarios):
 
 What I learned: deque(iterable, maxlen=N) is the right structure for FIFO rolling windows. Pre-filling with a literature prior is Bayesian-style initialization. Always trace mechanically (sum=147, /30=4.9) before reaching for narrative ("the system decided"). And \n is a newline; /n is two characters.
 
-Quick-cal mode deferred to Sprint 4 — same class, different constants.
+
+## April 29 — Risk Scoring and Tweak
+
+Some ideas for risk score:
+20 minutes is when time-pressure alone maxes out its contribution to the risk score. After 20 minutes of continuous focus, the clock has nothing more to say — but the clock alone never crosses the BREAK threshold. Strain in the blink rate must also be present. This separates duration from strain: long focus is concerning, but only concerning enough to escalate the dome when accompanied by physiological evidence.
+
+
+
+## April 30 Risk scoring engine
+
+Built `RiskEngine` class in `risk_engine.py` — owns "how concerned 
+should the dome be right now?" Consumes baseline state dict from 
+BaselineEngine. Single stored attribute: `last_break_time`. 
+Everything else computed fresh per call.
+
+Formula:
+- blink_risk = max(0, (reference - current_rate) / reference)
+- focus_risk = min(1.0, minutes_without_break / 20)
+- risk_score = 0.5 * blink_risk + 0.5 * focus_risk
+- CALM < 0.3 / ATTENTION < 0.6 / BREAK ≥ 0.6
+
+Key design decisions:
+- FOCUS_SATURATE_MIN = 20: motivated by AOA 20-20-20 rule and 
+  work-block research (Cirillo 2006, Mark 2008). Tunable constant,
+  not a derived value.
+- Focus alone caps at 0.5 risk (0.5 weight). Cannot trigger BREAK 
+  without blink strain also present. Time is a concern, not a sentence.
+- mark_break() resets focus clock only. Blink strain persists across 
+  breaks — intentional. A break addresses time, not physiology.
+- Time injected as parameter (not time.time() internally) — 
+  enables testing without waiting real seconds.
+
+Smoke test (5 scenarios):
+- Fresh healthy: score=0.0, CALM ✓
+- Strained 5min: score=0.458, ATTENTION ✓  
+- Healthy 60min: score=0.5, ATTENTION ✓ (clock alone never triggers BREAK)
+- Strained 30min: score=0.833, BREAK ✓
+- After mark_break: focus_risk=0.0, still ATTENTION (blink strain 
+  persists) ✓
+
+Considered resetting baseline after breaks by injecting healthy 
+values into deque. Rejected — same drift bug from opposite direction. 
+If user's blink rate is genuinely 5/min post-break, showing CALM 
+would be dishonest. Baseline reflects reality; it doesn't reset 
+to optimism.
+
+Commit: feat: risk scoring engine with break timer
