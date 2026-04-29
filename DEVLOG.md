@@ -62,3 +62,21 @@ I'll note the range limit in the abstract's limitations paragraph.
 
 EAR threshold is still 0.21. Haven't re-tuned for conference fluorescents 
 yet — that's the Sprint 4 lighting test.
+
+
+## April 29 — Rolling baseline engine
+
+Built `BaselineEngine` class - owns "what's the healthy blink rate reference for this user right now?" Returns reference, personal_baseline, floor_active, current_rate, samples_collected via get_state().
+
+Hybrid design: deque pre-filled with PRIOR=15 (Rosenfield healthy at-rest rate) so the baseline is meaningful from sample 1, no warm-up dead time. Reference = max(personal_baseline, FLOOR) where FLOOR=7 (Rosenfield strain threshold). The floor catches drift — without it, sustained strain pulls the rolling mean down with the user, and the system silently agrees with the deteriorating state instead of pushing back.
+
+Considered session-scale blending of calibration baseline with rolling rate. Rejected — any weighted average with a low recent rate pulls reference down, reintroducing the drift bug. Escalation over time belongs to the focus-clock in Task 2.2, not the baseline.
+
+Smoke test (3 scenarios):
+- Fresh start: reference=15.0, samples_collected=0 (deque full of priors)
+- 30 healthy samples (~15): reference=15.0, floor_active=False
+- 30 strained samples (~5): reference=7, personal_baseline=4.9, floor_active=True ← floor catching drift
+
+What I learned: deque(iterable, maxlen=N) is the right structure for FIFO rolling windows. Pre-filling with a literature prior is Bayesian-style initialization. Always trace mechanically (sum=147, /30=4.9) before reaching for narrative ("the system decided"). And \n is a newline; /n is two characters.
+
+Quick-cal mode deferred to Sprint 4 — same class, different constants.
