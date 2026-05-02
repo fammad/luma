@@ -125,4 +125,27 @@ If user's blink rate is genuinely 5/min post-break, showing CALM
 would be dishonest. Baseline reflects reality; it doesn't reset 
 to optimism.
 
-Commit: feat: risk scoring engine with break timer
+
+
+## May 2 - State machine and mock visualizer
+
+Added state.py with DomeState enum: CALM, ATTENTION, BREAK, BREATHING, PAUSED. 
+Single source of truth for dome states — every downstream module will import 
+from here instead of comparing strings. Pre-filled integers 1–5, standard 
+library Enum, no dependencies.
+
+Built mock_visualizer.py — tkinter window with animated circle driven by 
+real-clock sine wave. Brightness and cycle duration defined per state in 
+three dicts (STATE_COLORS, STATE_CYCLE, STATE_BRIGHTNESS). Keyboard bindings 
+1–5 for manual state switching. Two bugs found and fixed: tkinter not 
+bundled with Homebrew Python 3.12 (fixed with brew install python-tk@3.12), 
+and three methods accidentally dedented out of MockVisualizer class 
+(indentation fix). 
+
+Initial color palette was too saturated for daylight use — conference 
+fluorescents and desk ambient light won't produce the dark-room contrast 
+the original values assumed. Retuned to warm yellowish-white for CALM, 
+clear orange for ATTENTION, deep red for BREAK, bright green for BREATHING. 
+Brightness floors raised across all states so colors remain readable in 
+ambient light. BREAK amplitude compressed (0.25–0.65) to preserve the 
+withdrawal behavior against McFarlane framing.
