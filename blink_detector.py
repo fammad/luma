@@ -33,3 +33,4 @@ def calculate_ear(landmarks, eye_indices, image_w, image_h):
     ear = (A + B)/(2.0 * C)
 
     return ear
+
